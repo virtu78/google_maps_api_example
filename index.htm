@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>
+</title>
+<meta charset="Windows-1251-8">
+<style type="text/css">
+#map { 
+    width: 600px;
+	height:600px;	
+    background: #ccc;
+	border: solid 1px black; 
+	margin:20px;
+   }
+   #floating-panel {
+  position: absolute;
+  top: 15%;
+  left: 10%;
+  z-index: 5;
+  background-color: #fff;
+  padding: 5px;
+  border: 1px solid #999;
+  text-align: center;
+  font-family: 'Roboto','sans-serif';
+  line-height: 30px;
+  padding-left: 10px;
+}
+
+#map { 
+    
+   }
+ </style>  
+  
+</head>
+<body >
+
+ 
+ 
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.js"></script>
+<div id="floating-panel">
+      <input onclick="clearMarkers();" type=button value="Скрыть все маркеры">
+      <input onclick="showMarkers();" type=button value="Показать все маркеры">
+      <input onclick="deleteMarkers();" type=button value="Удалить маркеры">
+</div>
+
+<div id="map">
+
+</div>
+<script>
+var map;
+var markers = [];
+var labels = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+var labelIndex = 0;
+
+
+function initialize() {
+  var center = {lat: 56.8391, lng: 60.60839 };
+  
+
+  map = new google.maps.Map(document.getElementById('map'), {
+	zoom: 12,
+    center: center,
+    mapTypeId: google.maps.MapTypeId.ROADMAP
+  });
+
+  // This event listener will call addMarker() when the map is clicked.
+  map.addListener('click', function(event) {
+    addMarker(event.latLng);
+	
+  });
+
+  // Adds a marker at the center of the map.
+  addMarker(center);
+ 
+
+  }
+
+
+// Adds a marker to the map and push to the array.
+function addMarker(location) {
+  var marker = new google.maps.Marker({
+    position: location,
+	label: labels[labelIndex++ % labels.length],
+    map: map
+  });
+  markers.push(marker);
+  var contentString = '<div id="balloon">....</div>';
+  var infowindow = new google.maps.InfoWindow({
+  content: contentString,
+  maxWidth: 200
+  });
+       
+  marker.addListener('click', function() {
+    infowindow.open(map, marker);
+	infowindow.setContent(content)
+  });
+}
+function setMapOnAll(map) {
+  for (var i = 0; i < markers.length; i++) {
+    markers[i].setMap(map);
+  }
+}
+function clearMarkers() {
+  setMapOnAll(null);
+}
+function showMarkers() {
+  setMapOnAll(map);
+}
+function deleteMarkers() {
+  clearMarkers();
+  markers = [];
+}
+
+</script>
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAdv0JbtcaHUrLYpOTReK8-BE2wiQkrqdo&callback=initialize"
+async defer></script>
+</body>
+</html>
