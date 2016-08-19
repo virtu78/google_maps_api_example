@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>
+</title>
+<meta charset="utf-8">
+ <link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/dojo/1.10.4/dijit/themes/soria/soria.css">
+<link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/dojo/1.10.4/dojo/resources/dojo.css" >
+<style type="text/css">
+#map { 
+	width: 600px;
+	height:600px;	
+    background: #ccc;
+	z-index: 4;
+	border: solid 1px black; 
+	margin:20px;
+   }
+#floating-panel {
+	position: absolute;
+	top: 8%;
+	left: 15%;
+	z-index: 5;
+	background-color: #fff;
+	padding: 5px;
+	border: 1px solid #999;
+	text-align: center;
+	font-family: 'Roboto','sans-serif';
+	line-height: 10px;
+	}
+
+	#balloon { 
+    position: absolute;
+	left: 700px;
+	bottom:400px;
+	z-index: 6;
+	background-color: #ccc;
+	padding: 5px;
+	border: 1px solid #999;
+	font-family: 'Roboto','sans-serif';
+	}
+	#testMap,
+#table{
+   display:table;   
+   
+	position: absolute;
+	top: 490px;
+	left: 30px;
+	z-index: 8;
+	background-color: #fff700;
+	padding: 5px;
+	border: 1px solid #999;
+	text-align: center;
+	font-family: 'Roboto','sans-serif';
+	line-height: 10px;
+	
+}
+ 
+.row{
+   display:table-row;   
+}
+ 
+.col{
+    display:table-cell; 
+     
+}
+ </style>  
+  
+</head>
+<body class="soria">
+
+<script>
+    dojoConfig= {
+        has: {
+            "dojo-firebug": true,
+		},
+		
+        parseOnLoad: true,
+        async: true
+    };
+</script>
+<script src="//ajax.googleapis.com/ajax/libs/dojo/1.10.4/dojo/dojo.js"></script>
+<script>
+// Require the registry, parser, Dialog, and wait for domReady
+require(["dojo/query", "dijit/registry", "dojo/dom", "dijit/form/NumberTextBox", "dijit/form/Button", "dijit/form/Select", "dojo/parser", "dojo/json", 
+"dojo/_base/config", "dojo/domReady!", "dijit/Dialog", "dijit/form/ValidationTextBox",  "dojox/validate", "dojox/validate/check", "dojox/validate/web"]);
+</script>
+
+
+
+<div id="floating-panel">
+<button id="btn1" data-dojo-type="dijit/form/Button"  onClick= "clearMarkers();">
+Скрыть маркеры
+</button>
+<button id="btn2" data-dojo-type="dijit/form/Button"  onClick= "showMarkers();">
+Показать маркеры
+</button>
+<button id="btn3" data-dojo-type="dijit/form/Button"  onClick= "deleteMarkers();">
+Удалить маркеры
+</button>
+      
+</div>
+<div id="centerPanel"
+        data-dojo-type="dijit/layout/TabContainer"
+        data-dojo-props="region: 'center', tabPosition: 'bottom'">
+    
+
+<div id="map"></div>
+</div>
+
+<div id="table">
+
+	<div class="row">
+			<div class="col">Название организации:</div>
+            <div class="col"><input id="organization" required="true" data-dojo-type="dijit/form/TextBox" ></div>
+		</div> 
+		<div class="row">
+			<div class="col">Город:</div>
+            <div class="col"><input id="city" required="true" data-dojo-type="dijit/form/TextBox"></div>
+		</div> 
+		<div class="row">
+			<div class="col">Улица:</div>
+            <div class="col"><input id="street" required="true" data-dojo-type="dijit/form/TextBox" ></div>
+		</div> 
+		<div class="row">
+			<div class="col">Дом:</div>
+            <div class="col"><input id="house" required="true" data-dojo-type="dijit/form/NumberTextBox" ></div>
+		</div> 
+		<div class="row">
+			<div class="col">Офис:</div>
+            <div class="col"><input id="office" required="true" data-dojo-type="dijit/form/NumberTextBox" ></div>
+		</div> 
+		<div class="row">
+			
+            <div class="col"></div>
+			<div class="col">
+				<input id="btn4" type=submit  value="Создать маркер"
+                onClick=  "adressManager.Write(); ">
+				
+				</input>
+			</div>
+		</div> 
+		
+</div>
+
+<script>
+
+var map;
+var markers = [];
+var arrInfoWindows = [];
+var labels = 'AABCDEFGHIJKLMNOPQRSTUVWXYZ';
+var labelIndex = 0;
+var adressManager = {
+	adressData:null,
+	adress:null,	
+	organization:null,
+	city:null,
+	street:null,
+	house:null,
+	office:null
+	};
+
+function initialize() {
+	var center = {lat: 56.8391, lng: 60.60839 };
+	map = new google.maps.Map(document.getElementById('map'), {
+		zoom: 8,
+		center: center,
+		mapTypeId: google.maps.MapTypeId.ROADMAP
+		   
+	});
+	map.set('styles', [
+	{
+		featureType: 'road',
+		elementType: 'geometry',
+		stylers: [
+		{ color: '#ffd500' },
+		{ weight: 0.5 }
+			]
+	}, {
+		featureType: 'road',
+		elementType: 'labels',
+		stylers: [
+		{ saturation: -100 },
+		{ invert_lightness: true }
+		]
+	}, {
+		featureType: 'landscape',
+		elementType: 'geometry',
+		stylers: [
+			{ hue: '#ffff00' },
+			{ gamma: 1.4 },
+			{ saturation: 82 },
+			{ lightness: 96 }
+		]
+	}, {
+		featureType: 'poi.school',
+		elementType: 'geometry',
+		stylers: [
+			{ visibility: 'on' },
+			{ hue: '#fff700' },
+			{ lightness: -15 },
+			{ saturation: 99 }
+		]
+	},
+	{
+    featureType: 'road.local',
+    elementType: 'labels.text.fill',
+    stylers: [
+      { hue: '#fff700' },
+      { lightness: -15 },
+      { saturation: 99 }
+    ]
+  },
+  {
+    featureType: 'road.arterial',
+    elementType:'llabels.text.fill',
+    stylers: [
+      { hue: '#fff700' },
+      { lightness: -15 },
+      { saturation: 99 }
+    ]
+  },
+ {
+    featureType: 'road',
+    elementType:'labels.icon',
+    stylers: [
+      { hue: '#ffa200' },
+      { lightness: -15 },
+      { saturation: 99 }
+    ]
+  }
+  
+  
+	]);
+
+	map.addListener('click', function(event) {
+    addMarker(event.latLng);	
+	
+	});
+
+  
+	addMarker();
+}
+
+
+
+function addMarker(location) {
+  var marker = new google.maps.Marker({
+    position: location,
+
+    map: map
+  });
+  markers.push(marker);
+  var contentString = '<div id="balloon"></div>';
+  var infowindow = new google.maps.InfoWindow({
+  content: contentString,
+  maxWidth: 200
+  });
+ 
+  marker.addListener('click', function() {
+    
+	//обработка запроса json  файла
+ /*var request = new XMLHttpRequest();
+		request.open("GET", "json.json", true);
+
+		request.onreadystatechange = function(){
+			if(request.readyState == 4 ){
+				if(request.status == 200){
+			
+			
+	   adressManager.parseAdressJSON(request.responseText);
+			
+				}
+			}
+		};
+		
+		request.send(null);
+		
+		//разбор json  файла и вывод данных в балун
+		
+		adressManager.parseAdressJSON = function(mapJSON){
+		adressManager.adressData = JSON.parse(mapJSON);//разобрать JSON	
+		adressManager.organization = adressManager.adressData.organization;//
+		adressManager.city = adressManager.adressData.city;// 
+		adressManager.street = adressManager.adressData.street;//
+		adressManager.house = adressManager.adressData.house;// 
+		adressManager.office = adressManager.adressData.office;// 
+		adressManager.adress="Название организации:"+adressManager.organization+","+"<br>"+"Город:"+adressManager.city+","+"<br>"+"Улица:"+adressManager.street+".,"+"<br>"+
+		"Дом:"+adressManager.house+","+"<br>"+"Офис:"+adressManager.office+"."+"<br>";
+		
+		*/
+		function MyObject(organization, city, street, house, office) {
+		this.organization = organization;
+		this.city = city;
+		this.street = street;
+		this.house = house;
+		this.office = office;
+		}
+		var MyObjectInstance = new MyObject(5,"Sample");
+		
+		adressManager.Write=function (){
+		//var clone = new adressManager{};
+		//for (var key in adressManager) {
+		//this[key] = adressManager[key];
+		
+	adressManager.organization=document.getElementById("organization").value;
+	adressManager.city=document.getElementById("city").value;
+    adressManager.street=document.getElementById("street").value;
+    adressManager.house=document.getElementById("house").value;
+	adressManager.office=document.getElementById("office").value;
+	adressManager.adress="Название организации:"+adressManager.organization+","+"<br>"+"Город:"+adressManager.city+","+"<br>"+"Улица:"+adressManager.street+".,"+"<br>"+
+		"Дом:"+adressManager.house+","+"<br>"+"Офис:"+adressManager.office+"."+"<br>";
+		infowindow.open(map, marker);
+		infowindow.setContent(adressManager.adress);
+		arrInfoWindows.push(infowindow);
+		console.log(arrInfoWindows);
+		console.log(adressManager.organization);
+		console.log(adressManager.city);
+		console.log(adressManager.street);
+		console.log(adressManager.house);
+		console.log(adressManager.office);
+		};
+	 });
+	 console.log(markers);
+}
+function setMapOnAll(map) {
+  for (var i = 0; i < markers.length; i++) {
+    markers[i].setMap(map);
+  }
+}
+function clearMarkers() {
+  setMapOnAll(null);
+}
+function showMarkers() {
+  setMapOnAll(map);
+}
+function deleteMarkers() {
+  clearMarkers();
+  markers = [];
+  console.log(markers);
+}
+
+/*
+// запись данных из формы в объект форматирование объекта в  json  строку и обработка запроса на переписывание файла на сервере
+	adressManager.postJSON=function (){
+	adressManager.organization=document.getElementById("organization").value;
+	adressManager.city=document.getElementById("city").value;
+    adressManager.street=document.getElementById("street").value;
+    adressManager.house=document.getElementById("house").value;
+	adressManager.office=document.getElementById("office").value;
+	adressManager.adress="Название организации:"+adressManager.organization+","+"<br>"+"Город:"+adressManager.city+","+"<br>"+"Улица:"+adressManager.street+".,"+"<br>"+
+		"Дом:"+adressManager.house+","+"<br>"+"Офис:"+adressManager.office+"."+"<br>";
+	var myJSON=JSON.stringify(adressManager, ["organization", "city", "street", "house", "office"]);
+	var request = new XMLHttpRequest();
+		request.open("POST", "data.json", true);
+		
+		
+		request.setRequestHeader("Content-Type", "application/json");
+		request.send(myJSON);
+		alert(myJSON);
+*/
+
+	
+	
+	
+</script>
+
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAdv0JbtcaHUrLYpOTReK8-BE2wiQkrqdo&callback=initialize"
+async defer></script>
+
+</body>
+</html>
