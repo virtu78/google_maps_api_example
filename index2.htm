@@ -288,16 +288,9 @@ function addMarker(location) {
 		"Дом:"+adressManager.house+","+"<br>"+"Офис:"+adressManager.office+"."+"<br>";
 		
 		*/
-		function MyObject(organization, city, street, house, office) {
-		this.organization = organization;
-		this.city = city;
-		this.street = street;
-		this.house = house;
-		this.office = office;
-		}
-		var MyObjectInstance = new MyObject(5,"Sample");
 		
-		adressManager.Write=function (){
+}
+/*	adressManager.Write=function (){
 		//var clone = new adressManager{};
 		//for (var key in adressManager) {
 		//this[key] = adressManager[key];
@@ -309,7 +302,7 @@ function addMarker(location) {
 	adressManager.office=document.getElementById("office").value;
 	adressManager.adress="Название организации:"+adressManager.organization+","+"<br>"+"Город:"+adressManager.city+","+"<br>"+"Улица:"+adressManager.street+".,"+"<br>"+
 		"Дом:"+adressManager.house+","+"<br>"+"Офис:"+adressManager.office+"."+"<br>";
-		infowindow.open(map, marker);
+	*/	infowindow.open(map, marker);
 		infowindow.setContent(adressManager.adress);
 		arrInfoWindows.push(infowindow);
 		console.log(arrInfoWindows);
@@ -338,7 +331,27 @@ function deleteMarkers() {
   markers = [];
   console.log(markers);
 }
+    function MyObject(organization, city, street, house, office) {
+	
+		this.organization = organization;
+		this.city = city;
+		this.street = street;
+		this.house = house;
+		this.office = office;
+		}
+		var MyObjectInstance = new MyObject({
+    organization="wera";
+	city="ret";
+    street="tyk";
+    house=44;
+	office=89;)};
+	MyObject.prototype.getOrganization=function(){return this.organization;};
+	MyObject.prototype.getCity=function(){return this.city;};
+	MyObject.prototype.getStreet=function(){return this.street;};
+	MyObject.prototype.getHouse=function(){return this.house;};
+	MyObject.prototype.getoffice=function(){return this.office;};
 
+alert(user.getOrganizarion()=="wera");
 /*
 // запись данных из формы в объект форматирование объекта в  json  строку и обработка запроса на переписывание файла на сервере
 	adressManager.postJSON=function (){
