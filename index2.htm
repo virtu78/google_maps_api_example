@@ -15,6 +15,24 @@
 	border: solid 1px black; 
 	margin:20px;
    }
+  #list {
+   position: absolute;
+	width: 200px;
+	height:600px;	
+	top: 1%;
+	left: 610px;
+    background: #fff;
+	z-index: 8;
+	margin:20px;
+	}
+#listinfo{
+	width: 290px;
+	height:90px;	
+	border: solid 1px black; 
+	background-color: #fff;
+	z-index: 10;
+	}
+   
 #floating-panel {
 	position: absolute;
 	top: 8%;
@@ -24,7 +42,7 @@
 	padding: 5px;
 	border: 1px solid #999;
 	text-align: center;
-	font-family: 'Roboto','sans-serif';
+	font-family: 'Verdana','sans-serif';
 	line-height: 10px;
 	}
 
@@ -36,24 +54,25 @@
 	background-color: #ccc;
 	padding: 5px;
 	border: 1px solid #999;
-	font-family: 'Roboto','sans-serif';
+	font-family: 'Verdana','sans-serif';
 	}
-	#testMap,
+	
 #table{
-   display:table;   
-   
-	position: absolute;
-	top: 490px;
-	left: 30px;
+	display:none;
+  }
+#tablevis{
+display:table;   
+   	position: absolute;
+	top: 245px;
+	left: 145px;
 	z-index: 8;
 	background-color: #fff700;
 	padding: 5px;
 	border: 1px solid #999;
 	text-align: center;
-	font-family: 'Roboto','sans-serif';
+	font-family: 'Verdana','sans-serif';
 	line-height: 10px;
-	
-}
+	}
  
 .row{
    display:table-row;   
@@ -105,13 +124,14 @@ require(["dojo/query", "dijit/registry", "dojo/dom", "dijit/form/NumberTextBox",
     
 
 <div id="map"></div>
+<div id="list"></div>
 </div>
 
 <div id="table">
 
 	<div class="row">
-			<div class="col">Название организации:</div>
-            <div class="col"><input id="organization" required="true" data-dojo-type="dijit/form/TextBox" ></div>
+			<div class="col">Название<br> организации:</div>
+            <div class="col"><br><input id="organization" required="true" data-dojo-type="dijit/form/TextBox" ></div>
 		</div> 
 		<div class="row">
 			<div class="col">Город:</div>
@@ -132,11 +152,17 @@ require(["dojo/query", "dijit/registry", "dojo/dom", "dijit/form/NumberTextBox",
 		<div class="row">
 			
             <div class="col"></div>
+			 <div class="col">
 			<div class="col">
-				<input id="btn4" type=submit  value="Создать маркер"
-                onClick=  "adressManager.Write(); ">
-				
-				</input>
+			<button id="btn4" data-dojo-type="dijit/form/Button"  onClick= "tableHidden();adressManager.write();insertAt();clsTable();">
+			Готово
+			</button>
+				</div> 
+			<div class="col">
+			
+			<button id="btn5" data-dojo-type="dijit/form/Button"  onClick= "tableHidden();">
+			Закрыть
+			</button>
 			</div>
 		</div> 
 		
@@ -162,7 +188,7 @@ var adressManager = {
 function initialize() {
 	var center = {lat: 56.8391, lng: 60.60839 };
 	map = new google.maps.Map(document.getElementById('map'), {
-		zoom: 8,
+		zoom: 13,
 		center: center,
 		mapTypeId: google.maps.MapTypeId.ROADMAP
 		   
@@ -238,13 +264,22 @@ function initialize() {
 	});
 
   
-	addMarker();
+	
+	
 }
-
-
+ 
+function tableVisible() {
+  var table=document.getElementById("table");
+  table.id="tablevis";
+  };
+function tableHidden() {
+  var table=document.getElementById("tablevis");
+  table.id="table";
+  };
 
 function addMarker(location) {
   var marker = new google.maps.Marker({
+	draggable:true,
     position: location,
 
     map: map
@@ -288,21 +323,16 @@ function addMarker(location) {
 		"Дом:"+adressManager.house+","+"<br>"+"Офис:"+adressManager.office+"."+"<br>";
 		
 		*/
-		
-}
-/*	adressManager.Write=function (){
-		//var clone = new adressManager{};
-		//for (var key in adressManager) {
-		//this[key] = adressManager[key];
-		
-	adressManager.organization=document.getElementById("organization").value;
-	adressManager.city=document.getElementById("city").value;
-    adressManager.street=document.getElementById("street").value;
-    adressManager.house=document.getElementById("house").value;
-	adressManager.office=document.getElementById("office").value;
-	adressManager.adress="Название организации:"+adressManager.organization+","+"<br>"+"Город:"+adressManager.city+","+"<br>"+"Улица:"+adressManager.street+".,"+"<br>"+
-		"Дом:"+adressManager.house+","+"<br>"+"Офис:"+adressManager.office+"."+"<br>";
-	*/	infowindow.open(map, marker);
+		tableVisible();
+		adressManager.write=function (){
+			adressManager.organization=document.getElementById("organization").value;
+			adressManager.city=document.getElementById("city").value;
+			adressManager.street=document.getElementById("street").value;
+			adressManager.house=document.getElementById("house").value;
+			adressManager.office=document.getElementById("office").value;
+			adressManager.adress="Название организации:"+adressManager.organization+","+"<br>"+"Город:"+adressManager.city+","+"<br>"+"Улица:"+adressManager.street+","+"<br>"+
+									"Дом:"+adressManager.house+","+"<br>"+"Офис:"+adressManager.office+"."+"<br>";
+		infowindow.open(map, marker);
 		infowindow.setContent(adressManager.adress);
 		arrInfoWindows.push(infowindow);
 		console.log(arrInfoWindows);
@@ -312,9 +342,26 @@ function addMarker(location) {
 		console.log(adressManager.house);
 		console.log(adressManager.office);
 		};
+		
+		
+		
+		
 	 });
 	 console.log(markers);
 }
+function insertAt(){
+			var inlist = document.getElementById("list");
+			var div = document.createElement("div");
+			div.id="listinfo";
+			inlist.appendChild(div);
+			div.innerHTML= adressManager.adress;
+		}
+		function clsTable(){
+		var lis = document.getElementsByTagName('input');
+		for (var i = 0;  i < lis.length; i++) {
+				lis[i].value = '';
+		}
+		}
 function setMapOnAll(map) {
   for (var i = 0; i < markers.length; i++) {
     markers[i].setMap(map);
@@ -331,27 +378,7 @@ function deleteMarkers() {
   markers = [];
   console.log(markers);
 }
-    function MyObject(organization, city, street, house, office) {
-	
-		this.organization = organization;
-		this.city = city;
-		this.street = street;
-		this.house = house;
-		this.office = office;
-		}
-		var MyObjectInstance = new MyObject({
-    organization="wera";
-	city="ret";
-    street="tyk";
-    house=44;
-	office=89;)};
-	MyObject.prototype.getOrganization=function(){return this.organization;};
-	MyObject.prototype.getCity=function(){return this.city;};
-	MyObject.prototype.getStreet=function(){return this.street;};
-	MyObject.prototype.getHouse=function(){return this.house;};
-	MyObject.prototype.getoffice=function(){return this.office;};
 
-alert(user.getOrganizarion()=="wera");
 /*
 // запись данных из формы в объект форматирование объекта в  json  строку и обработка запроса на переписывание файла на сервере
 	adressManager.postJSON=function (){
