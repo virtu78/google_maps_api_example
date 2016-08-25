@@ -18,19 +18,26 @@
   #list {
    position: absolute;
 	width: 200px;
-	height:600px;	
+	height:1px;	
 	top: 1%;
-	left: 610px;
+	
+	left: 580px;
     background: #fff;
-	z-index: 8;
+	
 	margin:20px;
 	}
 #listinfo{
+	position: relative;
 	width: 290px;
 	height:90px;	
 	border: solid 1px black; 
-	background-color: #fff;
 	z-index: 10;
+	list-style-type: none;
+	padding:20px;
+	background:#369;
+	cursor:pointer;
+	font-family: 'Verdana','sans-serif';
+	color:#fff;
 	}
    
 #floating-panel {
@@ -46,7 +53,7 @@
 	line-height: 10px;
 	}
 
-	#balloon { 
+#balloon { 
     position: absolute;
 	left: 700px;
 	bottom:400px;
@@ -63,17 +70,66 @@
 #tablevis{
 display:table;   
    	position: absolute;
-	top: 245px;
+	top: 270px;
 	left: 145px;
 	z-index: 8;
-	background-color: #fff700;
 	padding: 5px;
 	border: 1px solid #999;
 	text-align: center;
 	font-family: 'Verdana','sans-serif';
+	color:#fff;
+	background:#369;
 	line-height: 10px;
 	}
- 
+#btn4, #btn5,#organization,#city,#street,#hose,#office{
+color:#000;
+}
+#span{
+	position: relative;
+	display:inline-block;
+	width:20px;
+	height:20px;
+	bottom:95px;
+	margin-left:275px;
+	border-radius:100%;
+	line-height:20px;
+	text-align:center;
+	font-weight:bolder;
+	
+	color:#f60;
+	background:#fff;
+	z-index: 23;
+	}
+#span_active{
+position: relative;
+	display:inline-block;
+	width:20px;
+	height:20px;
+	bottom:95px;
+	margin-left:275px;
+	border-radius:100%;
+	line-height:20px;
+	text-align:center;
+	font-weight:bolder;
+	color:#fff;
+	background:#f60;
+	z-index: 23;
+	border: 1px solid #999;
+}
+#listinfo_active{
+	color:#000;
+	background:#fff;
+	position: relative;
+	width: 290px;
+	height:90px;	
+	border: solid 1px black; 
+	z-index: 10;
+	list-style-type: none;
+	padding:20px;
+	cursor:pointer;
+	font-family: 'Verdana','sans-serif';
+	
+	}
 .row{
    display:table-row;   
 }
@@ -101,78 +157,64 @@ display:table;
 <script>
 // Require the registry, parser, Dialog, and wait for domReady
 require(["dojo/query", "dijit/registry", "dojo/dom", "dijit/form/NumberTextBox", "dijit/form/Button", "dijit/form/Select", "dojo/parser", "dojo/json", 
-"dojo/_base/config", "dojo/domReady!", "dijit/Dialog", "dijit/form/ValidationTextBox",  "dojox/validate", "dojox/validate/check", "dojox/validate/web"]);
+"dojo/_base/config", "dojo/domReady!", "dijit/Dialog", "dijit/form/ValidationTextBox", "dojox/validate", "dojox/validate/check", "dojox/validate/web"]);
 </script>
-
-
-
 <div id="floating-panel">
-<button id="btn1" data-dojo-type="dijit/form/Button"  onClick= "clearMarkers();">
-Скрыть маркеры
-</button>
-<button id="btn2" data-dojo-type="dijit/form/Button"  onClick= "showMarkers();">
-Показать маркеры
-</button>
-<button id="btn3" data-dojo-type="dijit/form/Button"  onClick= "deleteMarkers();">
-Удалить маркеры
-</button>
-      
+	<button id="btn1" data-dojo-type="dijit/form/Button"  onClick= "clearMarkers();">
+	Скрыть маркеры
+	</button>
+	<button id="btn2" data-dojo-type="dijit/form/Button"  onClick= "showMarkers();">
+	Показать маркеры
+	</button>
+	<button id="btn3" data-dojo-type="dijit/form/Button"  onClick= "spaneMarkers();">
+	Удалить маркеры
+	</button>  
 </div>
-<div id="centerPanel"
-        data-dojo-type="dijit/layout/TabContainer"
-        data-dojo-props="region: 'center', tabPosition: 'bottom'">
-    
-
 <div id="map"></div>
-<div id="list"></div>
-</div>
-
+<ul id="list"></ul>
 <div id="table">
-
 	<div class="row">
-			<div class="col">Название<br> организации:</div>
-            <div class="col"><br><input id="organization" required="true" data-dojo-type="dijit/form/TextBox" ></div>
-		</div> 
-		<div class="row">
-			<div class="col">Город:</div>
-            <div class="col"><input id="city" required="true" data-dojo-type="dijit/form/TextBox"></div>
-		</div> 
-		<div class="row">
-			<div class="col">Улица:</div>
-            <div class="col"><input id="street" required="true" data-dojo-type="dijit/form/TextBox" ></div>
-		</div> 
-		<div class="row">
-			<div class="col">Дом:</div>
-            <div class="col"><input id="house" required="true" data-dojo-type="dijit/form/NumberTextBox" ></div>
-		</div> 
-		<div class="row">
-			<div class="col">Офис:</div>
-            <div class="col"><input id="office" required="true" data-dojo-type="dijit/form/NumberTextBox" ></div>
-		</div> 
-		<div class="row">
-			
-            <div class="col"></div>
-			 <div class="col">
+		<div class="col">Название<br> организации:</div>
+        <div class="col"><br><input id="organization" required="true" data-dojo-type="dijit/form/TextBox" ></div>
+	</div> 
+	<div class="row">
+		<div class="col">Город:</div>
+        <div class="col"><input id="city" required="true" data-dojo-type="dijit/form/TextBox"></div>
+	</div> 
+	<div class="row">
+		<div class="col">Улица:</div>
+        <div class="col"><input id="street" required="true" data-dojo-type="dijit/form/TextBox" ></div>
+	</div> 
+	<div class="row">
+		<div class="col">Дом:</div>
+        <div class="col"><input id="house" required="true" data-dojo-type="dijit/form/NumberTextBox" ></div>
+	</div> 
+	<div class="row">
+		<div class="col">Офис:</div>
+        <div class="col"><input id="office" required="true" data-dojo-type="dijit/form/NumberTextBox" ></div>
+	</div> 
+	<div class="row">
+		<div class="col"></div>
+		<div class="col">
 			<div class="col">
-			<button id="btn4" data-dojo-type="dijit/form/Button"  onClick= "tableHidden();adressManager.write();insertAt();clsTable();">
-			Готово
-			</button>
-				</div> 
+				<button id="btn4" data-dojo-type="dijit/form/Button"  onClick= "tableHidden();adressManager.write();insertAt(); clsTable();">
+				Готово
+				</button>
+			</div> 
 			<div class="col">
-			
-			<button id="btn5" data-dojo-type="dijit/form/Button"  onClick= "tableHidden();">
-			Закрыть
-			</button>
+				<button id="btn5" data-dojo-type="dijit/form/Button"  onClick= "tableHidden();">
+				Закрыть
+				</button>
 			</div>
 		</div> 
-		
+	</div>
 </div>
-
 <script>
 
 var map;
 var markers = [];
 var arrInfoWindows = [];
+var list=[];
 var labels = 'AABCDEFGHIJKLMNOPQRSTUVWXYZ';
 var labelIndex = 0;
 var adressManager = {
@@ -185,7 +227,7 @@ var adressManager = {
 	office:null
 	};
 
-function initialize() {
+var initialize =function () {
 	var center = {lat: 56.8391, lng: 60.60839 };
 	map = new google.maps.Map(document.getElementById('map'), {
 		zoom: 13,
@@ -254,20 +296,11 @@ function initialize() {
       { saturation: 99 }
     ]
   }
-  
-  
-	]);
-
-	map.addListener('click', function(event) {
+  ]);
+	map.addListener('click', function(event){
     addMarker(event.latLng);	
-	
 	});
-
-  
-	
-	
-}
- 
+};
 function tableVisible() {
   var table=document.getElementById("table");
   table.id="tablevis";
@@ -276,23 +309,111 @@ function tableHidden() {
   var table=document.getElementById("tablevis");
   table.id="table";
   };
-
 function addMarker(location) {
-  var marker = new google.maps.Marker({
+	var marker = new google.maps.Marker({
 	draggable:true,
     position: location,
-
     map: map
-  });
-  markers.push(marker);
-  var contentString = '<div id="balloon"></div>';
-  var infowindow = new google.maps.InfoWindow({
-  content: contentString,
-  maxWidth: 200
-  });
- 
-  marker.addListener('click', function() {
-    
+	});
+	markers.push(marker);
+	var contentString = '<div id="balloon"></div>';
+	var infowindow = new google.maps.InfoWindow({
+	content: contentString,
+	maxWidth: 200
+	});
+ 	marker.addListener('click', function() {
+		tableVisible();
+		adressManager.write=function (){
+			adressManager.organization=document.getElementById("organization").value;
+			adressManager.city=document.getElementById("city").value;
+			adressManager.street=document.getElementById("street").value;
+			adressManager.house=document.getElementById("house").value;
+			adressManager.office=document.getElementById("office").value;
+			adressManager.adress="Название организации:"+"&nbsp"+adressManager.organization+","+"<br>"+"Город:"+"&nbsp"+adressManager.city+","+"<br>"+"Улица:"+"&nbsp"+adressManager.street+","+"<br>"+
+									"Дом:"+"&nbsp"+adressManager.house+","+"<br>"+"Офис:"+"&nbsp"+adressManager.office+"."+"<br>";
+			infowindow.open(map, marker);
+			infowindow.setContent(adressManager.adress);
+			arrInfoWindows.push(infowindow);
+			console.log(arrInfoWindows);
+			console.log(adressManager.organization);
+			console.log(adressManager.city);
+			console.log(adressManager.street);
+			console.log(adressManager.house);
+			console.log(adressManager.office);
+		};
+	});
+}
+function insertAt(){
+	var inlist = document.getElementById("list");
+	var li = document.createElement("li");
+	li.id="listinfo";
+	inlist.appendChild(li);
+	li.innerHTML= adressManager.adress;
+	list.push(li);
+	var span = document.createElement("span");
+	span.id="span";
+	for( var i=0; i<list.length;i++){
+	list[i].appendChild(span);
+	span.innerHTML= "x";
+	}
+	span.onclick = function() {
+	var li = document.getElementById("listinfo");
+	li.parentNode.removeChild(li);
+	}
+	
+	li.onclick=function() {
+	var li = document.getElementById("listinfo");
+	li.id="listinfo_active";
+	span.id="span_active";
+	}
+	
+	
+
+}
+function clsTable(){
+	var lis = document.getElementsByTagName('input');
+	for (var i = 0;  i < lis.length; i++) {
+		lis[i].value = '';
+	}
+}
+function setMapOnAll(map) {
+  for (var i = 0; i < markers.length; i++) {
+    markers[i].setMap(map);
+  }
+}
+function clearMarkers() {
+  setMapOnAll(null);
+}
+function showMarkers() {
+  setMapOnAll(map);
+}
+function spaneMarkers() {
+	
+  clearMarkers();
+  markers = [];
+  }
+
+
+/*
+// запись данных из формы в объект форматирование объекта в  json  строку и обработка запроса на переписывание файла на сервере
+	adressManager.postJSON=function (){
+	adressManager.organization=document.getElementById("organization").value;
+	adressManager.city=document.getElementById("city").value;
+    adressManager.street=document.getElementById("street").value;
+    adressManager.house=document.getElementById("house").value;
+	adressManager.office=document.getElementById("office").value;
+	adressManager.adress="Название организации:"+adressManager.organization+","+"<br>"+"Город:"+adressManager.city+","+"<br>"+"Улица:"+adressManager.street+".,"+"<br>"+
+		"Дом:"+adressManager.house+","+"<br>"+"Офис:"+adressManager.office+"."+"<br>";
+	var myJSON=JSON.stringify(adressManager, ["organization", "city", "street", "house", "office"]);
+	var request = new XMLHttpRequest();
+		request.open("POST", "data.json", true);
+		
+		
+		request.setRequestHeader("Content-Type", "application/json");
+		request.send(myJSON);
+		alert(myJSON);
+*/
+
 	//обработка запроса json  файла
  /*var request = new XMLHttpRequest();
 		request.open("GET", "json.json", true);
@@ -323,82 +444,7 @@ function addMarker(location) {
 		"Дом:"+adressManager.house+","+"<br>"+"Офис:"+adressManager.office+"."+"<br>";
 		
 		*/
-		tableVisible();
-		adressManager.write=function (){
-			adressManager.organization=document.getElementById("organization").value;
-			adressManager.city=document.getElementById("city").value;
-			adressManager.street=document.getElementById("street").value;
-			adressManager.house=document.getElementById("house").value;
-			adressManager.office=document.getElementById("office").value;
-			adressManager.adress="Название организации:"+adressManager.organization+","+"<br>"+"Город:"+adressManager.city+","+"<br>"+"Улица:"+adressManager.street+","+"<br>"+
-									"Дом:"+adressManager.house+","+"<br>"+"Офис:"+adressManager.office+"."+"<br>";
-		infowindow.open(map, marker);
-		infowindow.setContent(adressManager.adress);
-		arrInfoWindows.push(infowindow);
-		console.log(arrInfoWindows);
-		console.log(adressManager.organization);
-		console.log(adressManager.city);
-		console.log(adressManager.street);
-		console.log(adressManager.house);
-		console.log(adressManager.office);
-		};
 		
-		
-		
-		
-	 });
-	 console.log(markers);
-}
-function insertAt(){
-			var inlist = document.getElementById("list");
-			var div = document.createElement("div");
-			div.id="listinfo";
-			inlist.appendChild(div);
-			div.innerHTML= adressManager.adress;
-		}
-		function clsTable(){
-		var lis = document.getElementsByTagName('input');
-		for (var i = 0;  i < lis.length; i++) {
-				lis[i].value = '';
-		}
-		}
-function setMapOnAll(map) {
-  for (var i = 0; i < markers.length; i++) {
-    markers[i].setMap(map);
-  }
-}
-function clearMarkers() {
-  setMapOnAll(null);
-}
-function showMarkers() {
-  setMapOnAll(map);
-}
-function deleteMarkers() {
-  clearMarkers();
-  markers = [];
-  console.log(markers);
-}
-
-/*
-// запись данных из формы в объект форматирование объекта в  json  строку и обработка запроса на переписывание файла на сервере
-	adressManager.postJSON=function (){
-	adressManager.organization=document.getElementById("organization").value;
-	adressManager.city=document.getElementById("city").value;
-    adressManager.street=document.getElementById("street").value;
-    adressManager.house=document.getElementById("house").value;
-	adressManager.office=document.getElementById("office").value;
-	adressManager.adress="Название организации:"+adressManager.organization+","+"<br>"+"Город:"+adressManager.city+","+"<br>"+"Улица:"+adressManager.street+".,"+"<br>"+
-		"Дом:"+adressManager.house+","+"<br>"+"Офис:"+adressManager.office+"."+"<br>";
-	var myJSON=JSON.stringify(adressManager, ["organization", "city", "street", "house", "office"]);
-	var request = new XMLHttpRequest();
-		request.open("POST", "data.json", true);
-		
-		
-		request.setRequestHeader("Content-Type", "application/json");
-		request.send(myJSON);
-		alert(myJSON);
-*/
-
 	
 	
 	
