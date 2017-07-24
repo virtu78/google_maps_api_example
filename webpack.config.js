@@ -13,12 +13,30 @@ module.exports = {
 		publicPath: '/static/'
 	},
 	plugins: [
-		
+		new webpack.LoaderOptionsPlugin({
+            options: {
+                eslint:
+                {
+                    failOnWarning: false,
+                    failOnError: false,
+					fix: false,
+                    quiet: false,
+                },
+            },
+        }),
 		new webpack.HotModuleReplacementPlugin(),
 		new webpack.NoEmitOnErrorsPlugin()
 	],
-	module:	{	
+	module:	{
 		rules: [
+			{
+				test: /\.js$/,
+				enforce: "pre",
+				loader: 'eslint-loader',
+				include: [
+				path.resolve(__dirname,	"src"),
+				],
+			},
 			{
 				test:	/\.js$/,
 				include:	[
